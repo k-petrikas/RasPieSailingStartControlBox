@@ -3,26 +3,27 @@ import timeit
 import datetime
 import winsound
 import threading 
+import multiprocessing
+
 
 s = 5
 
 def time_keeper(sequence_length):
 
-    three_min_sequence = [[60,[2,0]],[30,[1,3]],[30,[1,0]],[30,[0,3]],[10,[0,2]],[10,[0,1]],[5,[0,1]],[1,[0,1]],[1,[0,1]],[1,[0,1]],[1,[0,1]],[1,[0,1]]]
-    print("start")
+    three_min_sequence = [[0,[3,0]],[60,[2,0]],[30,[1,3]],[30,[1,0]],[30,[0,3]],[10,[0,2]],[10,[0,1]],[5,[0,1]],[1,[0,1]],[1,[0,1]],[1,[0,1]],[1,[0,1]],[1,[0,1]]]
+    five_min_sequence = [[0,[1,0]],[60,[1,0]],[180,[1,0]],[60,[1,0]]]
+    #for x in five_min_sequence:
     for x in three_min_sequence:
         print(x)
         time.sleep(x[0])
-        print("slept")
-        print(x[1][0])
-        print(x[1][1])
-      
-        if (x[1][0] > 0) :
-            print("long horn " , x[1][0])
-            #TODO: switch to variable
-        if (x[1][1] > 0) :
-            print("short horn " , x[1][1])
-    
+
+        long_horn_count = x[1][0]
+        short_horn_count = x[1][1]
+##        p = multiprocessing.Process(target=horn_check_thread, args=(long_horn_count, short_horn_count))
+##        p.start
+        t = threading.Thread(target=horn_check_thread, args=(long_horn_count, short_horn_count))
+        t .start()
+ 
     print("DONE")
 
 
@@ -30,19 +31,32 @@ def time_keeper(sequence_length):
 
     return;
 
-def horn_check_thread(type_of_start, seconds_remaining):
-    if (seconds_remaining == 4 ) :
-            print( '3S Horn: ', seconds_remaining ) 
-            threading.Thread(target=sound_horn).start()
-    if (seconds_remaining == 2 ) :
-            print( '2S Horn: ', seconds_remaining ) 
-            threading.Thread(target=sound_horn).start()
+def horn_check_thread(long_horn_count, short_horn_count):
+    if (long_horn_count > 0) :
+        i = 1
+        while i <= long_horn_count:
+            #print("long horn " , long_horn_count)
+            long_horn()
+            i += 1
+
+    if (short_horn_count > 0) :
+        i = 1
+        while i <= short_horn_count:
+            #print("short horn " , short_horn_count)
+            short_horn()
+            i += 1
+
 
    
 
-def sound_horn():
-    print ("BEEP")
-    winsound.Beep(2000, 1000)
+def long_horn():
+    #print ("BEEP")
+    winsound.Beep(1000, 1000)
+    return;
+
+def short_horn():
+    #print ("BEEP")
+    winsound.Beep(1000, 500)
     return;
 
 if __name__ == '__main__':
